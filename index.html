@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>حرز علوی | فروشگاه</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Tahoma,Arial,sans-serif;
+  background:#075b36;
+  color:#183b29;
+}
+header{
+  background:#064629;
+  color:white;
+  text-align:center;
+  padding:25px 10px;
+}
+header h1{margin:0;font-size:30px}
+nav{
+  background:#043c25;
+  padding:14px;
+  text-align:center;
+}
+nav a{
+  color:white;
+  text-decoration:none;
+  margin:8px;
+}
+.hero{
+  text-align:center;
+  color:white;
+  padding:35px 15px;
+  background:linear-gradient(135deg,#087443,#21a366);
+}
+.container{
+  max-width:1100px;
+  margin:25px auto;
+  padding:15px;
+}
+.panel,.product{
+  background:white;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:20px;
+}
+input,textarea{
+  width:100%;
+  padding:12px;
+  margin:7px 0;
+  border:1px solid #ccc;
+  border-radius:7px;
+  font-family:inherit;
+}
+button,.btn{
+  border:0;
+  border-radius:8px;
+  padding:11px 16px;
+  cursor:pointer;
+  background:#087443;
+  color:white;
+  font-family:inherit;
+  text-decoration:none;
+  display:inline-block;
+  margin:4px 0;
+}
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:18px;
+}
+.product img{
+  width:100%;
+  height:190px;
+  object-fit:contain;
+  border-radius:8px;
+}
+.price{
+  color:#087443;
+  font-size:19px;
+  font-weight:bold;
+}
+.support{
+  position:fixed;
+  bottom:18px;
+  left:18px;
+  background:#20c866;
+  color:white;
+  padding:14px 18px;
+  border-radius:30px;
+  text-decoration:none;
+  box-shadow:0 3px 12px #0004;
+}
+footer{
+  background:#043c25;
+  color:white;
+  text-align:center;
+  padding:20px;
+}
+.small{font-size:12px;color:#666}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h1>🌿 حرز علوی 🌿</h1>
+  <p>فروشگاه محصولات مذهبی و معنوی</p>
+</header>
+
+<nav>
+  <a href="#home">صفحه اصلی</a>
+  <a href="#products">محصولات</a>
+  <a href="#manage">مدیریت محصولات</a>
+  <a href="#contact">پشتیبانی</a>
+</nav>
+
+<section class="hero" id="home">
+  <h2>به فروشگاه حرز علوی خوش آمدید</h2>
+  <p>مشاهده محصولات و ثبت سفارش آسان</p>
+  <a href="#products" class="btn"
+     style="background:white;color:#075b36">
+    مشاهده محصولات
+  </a>
+</section>
+
+<div class="container">
+
+<section id="products">
+  <h2 style="color:white">محصولات فروشگاه</h2>
+  <div class="products" id="productList"></div>
+</section>
+
+<section class="panel" id="manage">
+  <h2>➕ افزودن محصول جدید</h2>
+
+  <label>نام محصول</label>
+  <input id="name" placeholder="مثلاً حرز علوی">
+
+  <label>قیمت محصول به تومان</label>
+  <input id="price" type="number" min="0" placeholder="مثلاً 250000">
+
+  <label>توضیحات محصول</label>
+  <textarea id="description" placeholder="توضیحات محصول"></textarea>
+
+  <label>عکس محصول</label>
+  <input id="photo" type="file" accept="image/*">
+
+  <button onclick="addProduct()">ثبت محصول</button>
+  <p class="small">
+    محصولات در همین مرورگر ذخیره می‌شوند. برای مدیریت دائمی و مشترک
+    از چند دستگاه، به پایگاه داده و پنل مدیریت آنلاین نیاز است.
+  </p>
+</section>
+
+<section class="panel" id="contact">
+  <h2>📞 پشتیبانی فروشگاه</h2>
+  <p>برای سؤال درباره محصولات یا ثبت سفارش با ما تماس بگیرید.</p>
+  <label>شماره واتساپ فروشگاه</label>
+  <input id="supportNumber" placeholder="مثلاً 989121234567">
+  <button onclick="saveSupport()">ذخیره شماره پشتیبانی</button>
+  <p class="small">
+    شماره را با کد کشور وارد کن؛ بدون علامت + و بدون فاصله.
+  </p>
+</section>
+
+</div>
+
+<a class="support" id="supportButton"
+   href="#" target="_blank" rel="noopener">
+   پشتیبانی واتساپ
+</a>
+
+<footer>
+  <p>🌿 فروشگاه حرز علوی 🌿</p>
+  <p>تمامی حقوق محفوظ است.</p>
+</footer>
+
+<script>
+let products = [];
+let supportNumber = "";
+
+try {
+  products = JSON.parse(localStorage.getItem("horzProducts") || "[]");
+  supportNumber = localStorage.getItem("horzSupport") || "";
+} catch(e) {
+  products = [];
+}
+
+document.getElementById("supportNumber").value = supportNumber;function saveProducts() {
+  try {
+    localStorage.setItem("horzProducts", JSON.stringify(products));
+  } catch(e) {
+    alert("فضای ذخیره‌سازی پر است. عکس کوچک‌تری انتخاب کن.");
+  }
+}
+
+function saveSupport() {
+  supportNumber = document.getElementById("supportNumber").value
+    .replace(/\D/g, "");
+
+  localStorage.setItem("horzSupport", supportNumber);
+  updateSupport();
+  alert("شماره پشتیبانی ذخیره شد.");
+}
+
+function updateSupport() {
+  const btn = document.getElementById("supportButton");
+
+  if (supportNumber) {
+    btn.href = "https://wa.me/" + supportNumber +
+      "?text=" + encodeURIComponent("سلام، درباره محصولات حرز علوی سؤال دارم.");
+  } else {
+    btn.href = "#contact";
+  }
+}
+
+function addProduct() {
+  const name = document.getElementById("name").value.trim();
+  const price = document.getElementById("price").value;
+  const description = document.getElementById("description").value.trim();
+  const file = document.getElementById("photo").files[0];
+
+  if (!name  price === ""  Number(price) < 0) {
+    alert("نام و قیمت معتبر محصول را وارد کن.");
+    return;
+  }
+
+  if (file && file.size > 1500000) {
+    alert("لطفاً عکسی با حجم کمتر از 1.5 مگابایت انتخاب کن.");
+    return;
+  }
+
+  function finish(image) {
+    products.push({
+      id: Date.now(),
+      name,
+      price: Number(price),
+      description,
+      image
+    });
+
+    saveProducts();
+    renderProducts();
+
+    document.getElementById("name").value = "";
+    document.getElementById("price").value = "";
+    document.getElementById("description").value = "";
+    document.getElementById("photo").value = "";
+
+    alert("محصول اضافه شد.");
+  }
+
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      finish(e.target.result);
+    };
+    reader.onerror = function() {
+      alert("خواندن عکس ناموفق بود.");
+    };
+    reader.readAsDataURL(file);
+  } else {
+    finish("");
+  }
+}
+
+function deleteProduct(id) {
+  if (!confirm("این محصول حذف شود؟")) return;
+
+  products = products.filter(p => p.id !== id);
+  saveProducts();
+  renderProducts();
+}
+
+function renderProducts() {
+  const list = document.getElementById("productList");
+  list.innerHTML = "";
+
+  if (!products.length) {
+    list.innerHTML =
+      '<div class="product">هنوز محصولی ثبت نشده است.</div>';
+    return;
+  }
+
+  products.forEach(p => {
+    const card = document.createElement("article");
+    card.className = "product";
+
+    if (p.image) {
+      const img = document.createElement("img");
+      img.src = p.image;
+      img.alt = p.name;
+      card.appendChild(img);
+    }
+
+    const title = document.createElement("h3");
+    title.textContent = p.name;
+    card.appendChild(title);
+
+    const desc = document.createElement("p");
+    desc.textContent = p.description || "";
+    card.appendChild(desc);
+
+    const price = document.createElement("p");
+    price.className = "price";
+    price.textContent = Number(p.price).toLocaleString("fa-IR") + " تومان";
+    card.appendChild(price);
+
+    const order = document.createElement("a");
+    order.className = "btn";
+    order.textContent = "سفارش در واتساپ";
+    order.target = "_blank";
+    order.rel = "noopener";
+
+    order.href = supportNumber
+      ? "https://wa.me/" + supportNumber + "?text=" +
+        encodeURIComponent("سلام، محصول «" + p.name +
+        "» را می‌خواهم. لطفاً راهنمایی کنید.")
+      : "#contact";
+
+    card.appendChild(order);
+
+    const del = document.createElement("button");
+    del.textContent = "حذف محصول";
+    del.style.background = "#b3261e";
+    del.onclick = () => deleteProduct(p.id);
+    card.appendChild(del);
+
+    list.appendChild(card);
+  });
+}
+
+updateSupport();
+renderProducts();
+</script>
+
+</body>
+</html>
